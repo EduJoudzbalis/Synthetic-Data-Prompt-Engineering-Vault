@@ -1,0 +1,35 @@
+Actúa como un Experto en Data Engineering y Simulación de Procesos Industriales.
+Tu tarea es generar un script de Python completo que cree un dataset sintético para un ejercicio de entrenamiento en Limpieza de Datos (Data Wrangling).
+
+El escenario es una fábrica de papel térmico. Necesito exactamente 1112 registros de sensores.
+
+Instrucciones paso a paso:
+
+FASE 1: GENERACIÓN DE LA FÍSICA REALISTA (El "Golden Record")
+Genera primero los datos basándote en una lógica física coherente:
+1. Columnas:
+   - Timestamp: Secuencial cada 4 minutos (empezando 2026-03-01).
+   - Machine_ID: 3 máquinas (ej. MAQ-01, MAQ-02).
+   - Sensor_Temp_C: Temperatura del rodillo (fluctúa alrededor del objetivo).
+   - Target_Temp_C: Configurada según el papel (Standard=170°C, Eco=160°C, Top Coated=175°C).
+   - Production_Speed_Mmin: Velocidad promedio 600 m/min.
+   - Paper_Grade: Distribución desbalanceada (80% Standard, 10% Eco, 10% Top Coated).
+   - Status: 'Running', 'Idle', 'Overheating', 'Safety_Stop'.
+
+2. Reglas de Comportamiento:
+   - Inercia Térmica: La temperatura no debe ser random puro; debe tener "drift" (deriva) y corrección hacia el target.
+   - Relación Estado-Temp: Si entra en 'Idle', la temperatura y velocidad deben caer. Si supera el Target por 8%, el estado cambia a 'Overheating'.
+   - Casos Críticos (Edge Cases): Introduce aleatoriamente 5 eventos de 'Safety_Stop' donde la temperatura se dispare (+30°C sobre el objetivo) y la máquina se detenga.
+
+FASE 2: INYECCIÓN DE ERRORES (El escenario de Data Wrangling)
+Una vez generados los datos correctos, aplica las siguientes corrupciones para crear el dataset final "sucio":
+1. Valores Nulos (Missing Data): Introduce NaN en el 5% de 'Sensor_Temp_C' y 2% de 'Status'.
+2. Errores de Tipo (Dirty Strings): En la columna 'Production_Speed_Mmin', convierte aleatoriamente el 5% de los valores numéricos a texto con unidades (ej. de 600 a "600 m/min").
+3. Inconsistencia Categórica (Typos): En 'Paper_Grade', introduce variantes no estandarizadas (ej. cambia 'Standard' por 'Std' y 'Eco' por 'eco' en algunos registros).
+4. Datos Ilógicos: Introduce 5 registros con velocidad negativa (ej. -500).
+5. Duplicados: Duplica aleatoriamente 15 filas al final del dataset.
+
+SALIDA REQUERIDA:
+- Proporciona UNICAMENTE el código Python necesario para generar este DataFrame y guardarlo como un archivo CSV llamado 'raw_thermal_production_data.csv'.
+- El código debe usar pandas y numpy.
+- Asegúrate de que el código sea reproducible (usa semillas aleatorias).
